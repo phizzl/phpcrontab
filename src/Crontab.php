@@ -140,7 +140,7 @@ class Crontab
 
     /**
      * @param CronInterface $cron
-     * @return PHPMailer|void
+     * @return PHPMailer|null
      */
     protected function createMail(CronInterface $cron){
         $recipients = $this->getConfig()->getGlobalReportRecipients();
@@ -150,13 +150,13 @@ class Crontab
 
         if(!count($recipients)){
             $this->getLogger()->addDebug("No recipients for mail", array("cron" => $cron->getName()));
-            return;
+            return null;
         }
 
         $mailer = new PHPMailer(false);
         $mailer->isHTML(false);
         if($fromAddress = $this->getConfig()->getMailFromAddress()){
-            $mailer->setFrom($fromAddress, $this->name);
+            $mailer->setFrom($fromAddress, "{$this->name} - " . gethostname());
         }
 
         if($smtpHost = $this->getConfig()->getMailSmtpHost()){
