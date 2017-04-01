@@ -115,7 +115,7 @@ abstract class AbstractCron implements CronInterface
      * @param int $reportStatus
      */
     public function setReportStatus($reportStatus){
-        $this->reportStatus;
+        $this->reportStatus = $reportStatus;
     }
 
     /**

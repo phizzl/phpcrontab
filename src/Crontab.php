@@ -86,7 +86,7 @@ class Crontab
                     $this->handleCronError($cron);
                 }
                 elseif($status === true){
-                    $this->getLogger()->addNotice("The cron ended successfully", array("cron" => $cron->getName()));
+                    $this->getLogger()->addNotice("The cron ended successfully", array("cron" => $cron->getName(), "status" => $status));
                     $this->handleCronSuccess($cron);
                 }
             }
@@ -104,6 +104,7 @@ class Crontab
     protected function handleCronError(CronInterface $cron, $errorMessage = null){
         if($cron->getReportStatus() === CronInterface::REPORT_NEVER
             || !($mailer = $this->createMail($cron))){
+            $this->getLogger()->addDebug("Success mail will not be send", array("cron" => $cron->getName(), "reportstatus" => $cron->getReportStatus()));
             return;
         }
 
@@ -123,6 +124,7 @@ class Crontab
     protected function handleCronSuccess(CronInterface $cron, $successMessage = null){
         if($cron->getReportStatus() !== CronInterface::REPORT_ALWAYS
             || !($mailer = $this->createMail($cron))){
+            $this->getLogger()->addDebug("Success mail will not be send", array("cron" => $cron->getName(), "reportstatus" => $cron->getReportStatus()));
             return;
         }
 
@@ -141,8 +143,13 @@ class Crontab
      * @return PHPMailer|void
      */
     protected function createMail(CronInterface $cron){
-        $recipients = array_merge($this->getConfig()->getGlobalReportRecipients(), $cron->getReportRecipients());
+        $recipients = $this->getConfig()->getGlobalReportRecipients();
+        if(is_array($cron->getReportRecipients())){
+            $recipients = array_merge($recipients, $cron->getReportRecipients());
+        }
+
         if(!count($recipients)){
+            $this->getLogger()->addDebug("No recipients for mail", array("cron" => $cron->getName()));
             return;
         }
 
@@ -174,7 +181,7 @@ class Crontab
             $mailer->Port = $smtpPort;
         }
 
-        $mailer->Subject = "{$this->name} | {$cron->getName()}";
+        $mailer->Subject = "{$this->name} | Cron: {$cron->getName()}";
         foreach($recipients as $recipient){
             $mailer->addAddress($recipient);
         }
