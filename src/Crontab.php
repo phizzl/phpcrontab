@@ -102,93 +102,16 @@ class Crontab
      * @param CronInterface $cron
      */
     protected function handleCronError(CronInterface $cron, $errorMessage = null){
-        if($cron->getReportStatus() === CronInterface::REPORT_NEVER
-            || !($mailer = $this->createMail($cron))){
-            $this->getLogger()->addDebug("Success mail will not be send", array("cron" => $cron->getName(), "reportstatus" => $cron->getReportStatus()));
-            return;
-        }
-
-        $errorMessage = $errorMessage === null ? "The cron {$cron->getName()} ended with errors!" : $errorMessage;
-        $mailer->Body = $errorMessage;
-        $mailer->Subject .= " | FAILED";
-        $mailer->Priority = 1;
-        if(!$mailer->send()){
-            $this->getLogger()->addError("Mail could not be send", array("cron" => $cron->getName()));
-        }
-        else{
-            $this->getLogger()->addDebug("Mail was send", array("cron" => $cron->getName()));
-        }
+        $handler = new CronStatusHandlerError($cron, $this->getConfig(), $this->getLogger());
+        $handler->handle($errorMessage);
     }
 
     /**
      * @param CronInterface $cron
      */
     protected function handleCronSuccess(CronInterface $cron, $successMessage = null){
-        if($cron->getReportStatus() !== CronInterface::REPORT_ALWAYS
-            || !($mailer = $this->createMail($cron))){
-            $this->getLogger()->addDebug("Success mail will not be send", array("cron" => $cron->getName(), "reportstatus" => $cron->getReportStatus()));
-            return;
-        }
-
-        $successMessage = $successMessage === null ? "The cron {$cron->getName()} ended successfully!" : $successMessage;
-        $mailer->Body = $successMessage;
-        if(!$mailer->send()){
-            $this->getLogger()->addError("Mail could not be send", array("cron" => $cron->getName()));
-        }
-        else{
-            $this->getLogger()->addDebug("Mail was send", array("cron" => $cron->getName()));
-        }
-    }
-
-    /**
-     * @param CronInterface $cron
-     * @return PHPMailer|null
-     */
-    protected function createMail(CronInterface $cron){
-        $recipients = $this->getConfig()->getGlobalReportRecipients();
-        if(is_array($cron->getReportRecipients())){
-            $recipients = array_merge($recipients, $cron->getReportRecipients());
-        }
-
-        if(!count($recipients)){
-            $this->getLogger()->addDebug("No recipients for mail", array("cron" => $cron->getName()));
-            return null;
-        }
-
-        $mailer = new PHPMailer(false);
-        $mailer->isHTML(false);
-        if($fromAddress = $this->getConfig()->getMailFromAddress()){
-            $mailer->setFrom($fromAddress, "{$this->name} - " . gethostname());
-        }
-
-        if($smtpHost = $this->getConfig()->getMailSmtpHost()){
-            $mailer->isSMTP();
-            $mailer->SMTPAuth = true;
-            $mailer->Host = $smtpHost;
-        }
-
-        if($mailer->SMTPAuth && ($smtpUser = $this->getConfig()->getMailSmtpUser())){
-            $mailer->Username = $smtpUser;
-        }
-
-        if($mailer->SMTPAuth && ($smtpPass = $this->getConfig()->getMailSmtpPass())){
-            $mailer->Password = $smtpPass;
-        }
-
-        if($mailer->SMTPAuth && ($smtpSecure = $this->getConfig()->getMailSmtpSecure())){
-            $mailer->SMTPSecure = $smtpSecure;
-        }
-
-        if($mailer->SMTPAuth && ($smtpPort = $this->getConfig()->getMailSmtpPort())){
-            $mailer->Port = $smtpPort;
-        }
-
-        $mailer->Subject = "{$this->name} | Cron: {$cron->getName()}";
-        foreach($recipients as $recipient){
-            $mailer->addAddress($recipient);
-        }
-
-        return $mailer;
+        $handler = new CronStatusHandlerSuccess($cron, $this->getConfig(), $this->getLogger());
+        $handler->handle($successMessage);
     }
 
     /**

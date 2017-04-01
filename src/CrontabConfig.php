@@ -9,6 +9,11 @@ class CrontabConfig
     /**
      * @var string
      */
+    private $name;
+
+    /**
+     * @var string
+     */
     private $cronLockDir;
 
     /**
@@ -50,12 +55,20 @@ class CrontabConfig
      * CrontabConfig constructor.
      */
     public function __construct(){
+        $this->name = "PHP Crontab";
         $this->cronLockDir = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'locks';
         $this->globalReportRecipients = array();
 
         $this->mailFromAddress = "phpcrontab@" . gethostname();
         $this->mailSmtpSecure = 'tls';
         $this->mailSmtpPort = 587;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(){
+        return $this->name;
     }
 
     /**
