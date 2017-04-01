@@ -39,6 +39,7 @@ class SimpleCron extends AbstractCron
         $this->setDay($scheduleParts[2]);
         $this->setMonth($scheduleParts[3]);
         $this->setDayOfWeek($scheduleParts[4]);
+        $this->setReportStatus(self::REPORT_ALWAYS);
     }
 
     /**

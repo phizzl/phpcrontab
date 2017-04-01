@@ -32,6 +32,16 @@ abstract class AbstractCron implements CronInterface
     protected $dayOfWeek;
 
     /**
+     * @var array
+     */
+    protected $reportRecipients;
+
+    /**
+     * @var int
+     */
+    protected $reportStatus;
+
+    /**
      * @return int|string
      */
     public function getMinute(){
@@ -100,6 +110,35 @@ abstract class AbstractCron implements CronInterface
     public function setDayOfWeek($dayOfWeek){
         $this->dayOfWeek = $dayOfWeek;
     }
+
+    /**
+     * @param int $reportStatus
+     */
+    public function setReportStatus($reportStatus){
+        $this->reportStatus;
+    }
+
+    /**
+     * @return int
+     */
+    public function getReportStatus(){
+        return $this->reportStatus;
+    }
+
+    /**
+     * @param array $reportRecipients
+     */
+    public function setReportRecipients(array $reportRecipients){
+        $this->reportRecipients = $reportRecipients;
+    }
+
+    /**
+     * @return array
+     */
+    public function getReportRecipients(){
+        return $this->reportRecipients;
+    }
+
 
     /**
      * @inheritdoc
