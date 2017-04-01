@@ -1,0 +1,22 @@
+{
+  "autoload": {
+    "psr-4": {"Phizzl\\phpcrontab\\": "src/"}
+  },
+  "name": "phizzl/phpcrontab",
+  "version": "0.0.1",
+  "dist": {
+    "url": "https://github.com/phizzl/phpcrontab/archive/master.zip",
+    "type": "zip"
+  },
+  "authors": [
+    {
+      "name": "Phillip Schleicher",
+      "email": "the@phizzl.de",
+      "homepage": "http://phizzl.de",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "mtdowling/cron-expression": "v1.2.0"
+  }
+}
