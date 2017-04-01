@@ -93,7 +93,7 @@ class Crontab
             catch(\Exception $e){
                 $this->getLogger()->addError("The cron ended with errors: " . $e->getMessage(), array("cron" => $cron->getName()));
                 $this->getLogger()->addDebug($e->getTraceAsString());
-                $this->handleCronError($cron, $e->getMessage());
+                $this->handleCronError($cron, $e->getMessage() . PHP_EOL . PHP_EOL . $e->getTraceAsString());
             }
         }
     }
