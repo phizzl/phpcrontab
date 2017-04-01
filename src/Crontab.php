@@ -111,7 +111,7 @@ class Crontab
         $errorMessage = $errorMessage === null ? "The cron {$cron->getName()} ended with errors!" : $errorMessage;
         $mailer->Body = $errorMessage;
         $mailer->Subject .= " | FAILED";
-        $mailer->Priority = 3;
+        $mailer->Priority = 1;
         if(!$mailer->send()){
             $this->getLogger()->addError("Mail could not be send", array("cron" => $cron->getName()));
         }
